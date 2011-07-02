@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export IFS=$'\n'
+cd $(dirname $0)
+./rhino jspdftk.js $*
