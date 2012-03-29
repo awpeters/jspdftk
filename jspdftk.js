@@ -29,6 +29,7 @@ function registerModule(modinfo) {
 
 load("cat.js");
 load("colorinfo.js");
+load("collect.js");
 load("cut.js");
 load("dup-pages.js");
 load("info.js");
