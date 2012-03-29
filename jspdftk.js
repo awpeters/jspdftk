@@ -34,6 +34,7 @@ load("info.js");
 load("merge.js");
 load("rotate.js");
 load("rotateScale.js");
+load("2up.js");
 
 function usage() {
     var err = System.err;
