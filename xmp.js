@@ -30,3 +30,8 @@ function xmp(args) {
     var s = new java.lang.String(xml);
     stdout.print(s);
 }
+
+registerModule({'command': 'xmp',
+		'name': 'Display XMP information in PDF',
+		'usage': xmpUsage,
+		'entry': xmp});

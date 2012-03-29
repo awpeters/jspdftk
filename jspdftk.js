@@ -37,6 +37,7 @@ load("info.js");
 load("merge.js");
 load("rotate.js");
 load("rotateScale.js");
+load("xmp.js");
 
 function usage() {
     var err = System.err;
