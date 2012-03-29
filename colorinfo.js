@@ -114,18 +114,22 @@ function colorinfo(args) {
 		    var image = pageTokens.get(counter - 1).getName();
 
 		    var pixels = images.get(image);
-		    if (pixels) {
-			var colorspace = pixels.getColorSpace().getName();
-			var bitdepth = pixels.getBitsPerComponent();
-			var type = "unknown";
-		    }
+		    var type = "unknown";
+		    var colorspace = "null";
+
+		    stdout.println("pixels: " + pixels);
+
 		    if (pixels instanceof PDCcitt) {
 			type = "CCITT";
+			colorspace = pixels.getColorSpace().getName();
 		    } else if (pixels instanceof PDJpeg) {
 			type = "JPEG";
+			colorspace = pixels.getColorSpace().getName();
 		    } else if (pixels instanceof PDPixelMap) {
 			type = "PNG";
+			//colorspace = pixels.getColorSpace().getName();
 		    }
+		    var bitdepth = pixels.getBitsPerComponent();
 
 		    //var imageObject = pdfIn.getObject(image);
 		    stdout.println("image " + op + ": " + 
