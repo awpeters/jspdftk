@@ -27,6 +27,7 @@ function registerModule(modinfo) {
     modules[command] = modinfo;
 }
 
+load("2up.js");
 load("cat.js");
 load("colorinfo.js");
 load("collect.js");
@@ -36,7 +37,6 @@ load("info.js");
 load("merge.js");
 load("rotate.js");
 load("rotateScale.js");
-load("2up.js");
 
 function usage() {
     var err = System.err;
