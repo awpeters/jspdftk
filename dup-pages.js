@@ -36,38 +36,33 @@ function dupPages(args) {
 
     var pageCount = pdfIn.getNumberOfPages();
 
-    err.println("Dup");
-    err.println("Pages: " + pageCount);
+    err.println("dup-pages: " + copies + "x");
 
     var cb = writer.getDirectContent();
-    for (var page = 1; page <= pageCount; page++) {
-	err.print("[");
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
-	var pageSize  = pdfIn.getPageSize(page);
+    err.print("[");
+    for (var pageno = 1; pageno <= pageCount; pageno++) {
+	var pageSize  = pdfIn.getPageSize(pageno);
+	document.setPageSize(pageSize);
 
-	var wd = pageSize.getWidth();
-	var ht = pageSize.getHeight();
-
-	document.setPageSize(new Rectangle(wd, ht));
+	var pdfPage = writer.getImportedPage(pdfIn, pageno);
 	for (var copy = 1; copy <= copies; copy++) {
-	    err.print("[" + page);
-
-	    document.newPage();
+	    err.print("[" + pageno);
 
 	    var c = 1;
 	    var s = 0;
 	    var x = 0;
 	    var y = 0;
+
+	    document.newPage();
 	    cb.addTemplate(pdfPage, c, s, -s, c, x, y);
 
 	    err.print("]");
 	}
-
-	err.print("]");
     }
-
+    err.print("]");
     err.println();
+
     document.close();
 }
 
