@@ -37,6 +37,8 @@ load("info.js");
 load("merge.js");
 load("rotate.js");
 load("rotateScale.js");
+load("scale.js");
+load("scaleToSize.js");
 load("xmp.js");
 
 function usage() {
