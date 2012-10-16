@@ -37,8 +37,8 @@ function collect(args) {
     var document = new Document(new Rectangle(w, h));
     var writer = PdfWriter.getInstance(document, stdout);
 
-    var xcopies = Math.floor(w / wd);
-    var ycopies = Math.floor(h / ht);
+    var xcopies = Math.round(w / wd, 0);
+    var ycopies = Math.round(h / ht, 0);
 
     document.open();
 
