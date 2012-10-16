@@ -42,7 +42,7 @@ function collect(args) {
 
     document.open();
 
-    err.println("collect");
+    err.println("collect (" + xcopies + " x " + ycopies + ")");
 
     var x0 = 0.5 * (w - wd * xcopies);
     var y0 = 0.5 * (h - ht * ycopies);
