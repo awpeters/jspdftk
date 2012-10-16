@@ -62,7 +62,7 @@ function collect(args) {
 	} else {
 	    x = x + wd;
 	}
-	if (x + wd > w) {
+	if (x > w) {
 	    x = x0;
 	    y = y + ht;
 	}
