@@ -45,7 +45,11 @@ function usage() {
     var err = System.err;
 
     err.print("Usage:  jspdftk action [args]\n");
-    err.print("  action [args]\n");
+    err.print("  action [args]\n\n");
+    err.print("Available actions:\n");
+    for (var name in modules) {
+	err.print("    " + name + "\t\t" + modules[name]['name'] + "\n");
+    }
     quit(1);
 }
 
