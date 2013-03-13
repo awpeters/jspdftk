@@ -33,6 +33,7 @@ load("colorinfo.js");
 load("collect.js");
 load("cut.js");
 load("dup-pages.js");
+load("extractOceOdl.js");
 load("info.js");
 load("merge.js");
 load("rotate.js");
