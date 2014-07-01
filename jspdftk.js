@@ -5,6 +5,8 @@ importPackage(java.lang);
 importPackage(com.itextpdf.text);
 importPackage(com.itextpdf.text.pdf);
 
+load("sprintf.js");
+
 var pi = 4 * Math.atan(1);
 
 function mm2pt(mm) {
@@ -47,12 +49,16 @@ load("xmp.js");
 function usage() {
     var err = System.err;
 
-    err.print("Usage:  jspdftk action [args]\n");
-    err.print("  action [args]\n\n");
+    err.print("\n");
+    err.print("Usage:  jspdftk action [args] [file-in] [file-out]\n");
     err.print("Available actions:\n");
     for (var name in modules) {
-	err.print("    " + name + "\t\t" + modules[name]['name'] + "\n");
+	err.print(sprintf("  %15s  %-10s  %s\n",
+			  modules[name]['command'],
+			  modules[name]['args'],
+			  modules[name]['name']));
     }
+    err.print("\n");
     quit(1);
 }
 
