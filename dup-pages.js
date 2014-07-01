@@ -40,7 +40,7 @@ function dupPages(args) {
 
     var cb = writer.getDirectContent();
 
-    err.print("[");
+    err.print("dup-pages [");
     for (var pageno = 1; pageno <= pageCount; pageno++) {
 	var pageSize  = pdfIn.getPageSize(pageno);
 	document.setPageSize(pageSize);
