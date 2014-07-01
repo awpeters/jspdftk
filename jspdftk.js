@@ -8,11 +8,11 @@ importPackage(com.itextpdf.text.pdf);
 var pi = 4 * Math.atan(1);
 
 function mm2pt(mm) {
-    return 72.0 * (mm / 25.4);
+    return 72.0 * mm / 25.4;
 }
 
 function pt2mm(pt) {
-    return 25.4 * (pt / 72.0);
+    return 25.4 * pt / 72.0;
 }
 
 function deg2rad(deg) {
