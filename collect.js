@@ -37,6 +37,9 @@ function collect(args) {
     var document = new Document(new Rectangle(w, h));
     var writer = PdfWriter.getInstance(document, stdout);
 
+    // err.println("w: " + w + ", wd " + wd);
+    // err.println("h: " + h + ", ht " + ht);
+
     var xcopies = Math.round(w / wd, 0);
     var ycopies = Math.round(h / ht, 0);
 
@@ -53,25 +56,33 @@ function collect(args) {
     var y = y0;
 
     var cb = writer.getDirectContent();
-    for (var page = 0; page < pageCount; page++) {
-	if (0 === (page % (xcopies * ycopies))) {
-	    err.print("[");
-	    document.newPage();
-	    x = x0;
-	    y = y0;
-	} else {
+    var page = 0;
+    err.print("collect [");
+    document.newPage();
+    for (var row = 0; row < xcopies; row++) {
+	x = x0;
+	err.print("[");
+	for (var col = 0; col < ycopies; col++) {
+	    page = page + 1;
+	    if (page > pageCount) {
+		break;
+	    }
+
+	    var pg = writer.getImportedPage(pdfIn, page);
+	    cb.addTemplate(pg, c, s, -s, c, x, y);
+
+	    err.print("[" + page + "@"
+		      + Math.round(pt2mm(x), 1) + ","
+		      + Math.round(pt2mm(y), 1) + "]");
+
+	    // advance to next column
 	    x = x + wd;
 	}
-	if (x > w) {
-	    x = x0;
-	    y = y + ht;
-	}
-
-	var pg = writer.getImportedPage(pdfIn, page + 1);
-	cb.addTemplate(pg, c, s, -s, c, x, y);
-
-	err.print("[" + (page + 1) + "]");
+	err.print("]");
+	// advance to next row
+	y = y + ht;
     }
+
     err.print("]");
     err.println();
     document.close();
