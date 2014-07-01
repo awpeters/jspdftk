@@ -28,10 +28,12 @@ function registerModule(modinfo) {
 }
 
 load("2up.js");
+load("add-cutmarks.js");
 load("cat.js");
 load("colorinfo.js");
 load("collect.js");
 load("cut.js");
+load("cross-impose.js");
 load("dup-pages.js");
 load("extractOceOdl.js");
 load("info.js");
