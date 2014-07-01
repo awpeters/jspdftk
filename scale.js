@@ -69,5 +69,6 @@ function scale(args) {
 
 registerModule({'command': 'scale',
 		'name': 'Scale PDF pages',
+		'args': 'F',
 		'usage': scaleUsage,
 		'entry': scale});

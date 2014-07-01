@@ -72,6 +72,7 @@ function scaleToSize(args) {
 }
 
 registerModule({'command': 'scaletosize',
-		'name': 'Scale PDF pages tp soze',
+		'name': 'Scale PDF pages to size',
+		'args': 'W H',
 		'usage': scaleToSizeUsage,
 		'entry': scaleToSize});

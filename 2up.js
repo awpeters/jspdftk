@@ -95,5 +95,6 @@ function twoup(args) {
 
 registerModule({'command': '2-up',
 		'name': '2-up PDFs',
+		'args': '',
 		'usage': twoupUsage,
 		'entry': twoup});

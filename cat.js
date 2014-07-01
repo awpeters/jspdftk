@@ -55,5 +55,6 @@ function cat(args) {
 
 registerModule({'command': 'cat',
 		'name': 'Concatenate PDF',
+		'args': '',
 		'usage': catUsage,
 		'entry': cat});

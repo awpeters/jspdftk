@@ -68,5 +68,6 @@ function dupPages(args) {
 
 registerModule({'command': 'dup-pages',
 		'name': 'Duplicate individual PDF pages',
+		'args': 'C',
 		'usage': dupPagesUsage,
 		'entry': dupPages});

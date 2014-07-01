@@ -69,5 +69,6 @@ function merge(args) {
 
 registerModule({'command': 'merge',
 		'name': 'Merge PDFs',
+		'args': 'BG',
 		'usage': mergeUsage,
 		'entry': merge});

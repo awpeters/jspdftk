@@ -100,5 +100,6 @@ function cut(args) {
 
 registerModule({'command': 'cut',
 		'name': 'Cut PDF page to size',
+		'args': 'W H [X Y]',
 		'usage': cutUsage,
 		'entry': cut});

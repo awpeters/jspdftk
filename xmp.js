@@ -33,5 +33,6 @@ function xmp(args) {
 
 registerModule({'command': 'xmp',
 		'name': 'Display XMP information in PDF',
+		'args': '',
 		'usage': xmpUsage,
 		'entry': xmp});

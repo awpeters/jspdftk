@@ -73,5 +73,6 @@ function rotate(args) {
 
 registerModule({'command': 'rotate',
 		'name': 'Rotate PDF pages',
+		'args': 'A',
 		'usage': rotateUsage,
 		'entry': rotate});

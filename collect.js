@@ -80,5 +80,6 @@ function collect(args) {
 
 registerModule({'command': 'collect',
 		'name': 'collect pages into on PDFs',
+		'args': 'W H',
 		'usage': collectUsage,
 		'entry': collect});

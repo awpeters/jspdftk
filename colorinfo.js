@@ -193,5 +193,6 @@ function colorinfo(args) {
 
 registerModule({'command': 'colorinfo',
 		'name': 'Show PDF color information per page',
+		'args': '',
 		'usage': colorInfoUsage,
 		'entry': colorinfo});

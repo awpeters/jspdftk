@@ -38,5 +38,6 @@ function info(args) {
 
 registerModule({'command': 'info',
 		'name': 'Show PDF info',
+		'args': '',
 		'usage': infoUsage,
 		'entry': info});

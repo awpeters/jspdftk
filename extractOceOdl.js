@@ -43,5 +43,6 @@ function extractOceOdl(args) {
 
 registerModule({'command': 'extractOceOdl',
 		'name': 'Extract Oce ODL XML stream from PDF',
+		'args': '',
 		'usage': extractOceOdlUsage,
 		'entry': extractOceOdl});

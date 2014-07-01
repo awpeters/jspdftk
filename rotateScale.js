@@ -133,5 +133,6 @@ function rotateScale(args) {
 
 registerModule({'command': 'rotateScale',
 		'name': 'Rotate and Scale PDF pages',
+		'args': 'S [W H]',
 		'usage': rotateScaleUsage,
 		'entry': rotateScale});
