@@ -8,34 +8,32 @@ function collectUsage(msg) {
     quit(1);
 }
 
-function checkCollectArgs(args) {
+function checkCollectArgs(params) {
+    args = params['opts'];
     if (args.length != 2) {
 	collectUsage("collect.js needs two arguments.");
     } else {
-	width = mm2pt(parseInt(args[0]));
-	height = mm2pt(parseInt(args[1]));
+	params['width'] = mm2pt(parseInt(args[0]));
+	params['height'] = mm2pt(parseInt(args[1]));
     }
-    return { width: width, height: height }
+
+    return params;
 }
 
-function collect(args) {
-    var err = System.err;
+function collect(params) {
+    var err = params['err'];
 
-    var params = checkCollectArgs(args);
-
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    var reader = new PdfReader(params['in']);
     var w = params["width"];
     var h = params["height"];
 
-    var stdout = new BufferedOutputStream(System.out);
-    var pageCount = pdfIn.getNumberOfPages();
-    var pageSize = pdfIn.getPageSize(1);
+    var pageCount = reader.getNumberOfPages();
+    var pageSize = reader.getPageSize(1);
     var wd = pageSize.getWidth();
     var ht = pageSize.getHeight();
 
     var document = new Document(new Rectangle(w, h));
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     // err.println("w: " + w + ", wd " + wd);
     // err.println("h: " + h + ", ht " + ht);
@@ -68,7 +66,7 @@ function collect(args) {
 		break;
 	    }
 
-	    var pg = writer.getImportedPage(pdfIn, page);
+	    var pg = writer.getImportedPage(reader, page);
 	    cb.addTemplate(pg, c, s, -s, c, x, y);
 
 	    err.print("[" + page + "@"
@@ -90,6 +88,7 @@ function collect(args) {
 }
 
 registerModule({'command': 'collect',
+		'parse_params': checkCollectArgs,
 		'name': 'collect pages into on PDFs',
 		'args': 'W H',
 		'usage': collectUsage,

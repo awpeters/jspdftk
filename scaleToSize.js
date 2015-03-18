@@ -1,37 +1,34 @@
 function scaleToSizeUsage() {
-    var err = java.lang.System.err;
+    var err = System.err;
 
-    err.print("Usage:  scaletosize.js width height\n");
+    err.print("Usage:  scaletosize width height\n");
     quit(1);
 }
 
-function checkScaletosizeArgs(args) {
-    var factor;
+function checkScaletosizeArgs(params) {
+    args = params['opts'];
     if (args.length != 2) {
 	scaletosizeUsage();
     }
-    var width = mm2pt(parseFloat(args[0]));
-    var height = mm2pt(parseFloat(args[1]));
-    return { width: width, height: height }
+
+    params['width'] = mm2pt(parseFloat(args[0]));
+    params['height'] = mm2pt(parseFloat(args[1]));
+
+    return params;
 }
 
-function scaleToSize(args) {
-    var err = System.err;
+function scaleToSize(params) {
+    var err = params['err'];
 
-    var params = checkScaletosizeArgs(args);
     var w = params["width"];
     var h = params["height"];
 
-    var streamIn = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(streamIn);
-
-    var pagecount = pdfIn.getNumberOfPages();
+    var reader = new PdfReader(params['in']);
 
     var document = new Document();
-    var streamOut = new BufferedOutputStream(System.out);
-    // var streamOut = new FileOutputStream("out.pdf");
+    var writer = PdfWriter.getInstance(document, params['out']);
 
-    var writer = PdfWriter.getInstance(document, streamOut);
+    var pagecount = reader.getNumberOfPages();
 
     document.open();
 
@@ -44,7 +41,7 @@ function scaleToSize(args) {
     var cb = writer.getDirectContent();
     for (var page = 1; page <= pagecount; page++) {
 	err.print("[");
-	var pagesize  = pdfIn.getPageSize(page);
+	var pagesize  = reader.getPageSize(page);
 	var W = pagesize.getWidth();
 	var H = pagesize.getHeight();
 
@@ -54,7 +51,7 @@ function scaleToSize(args) {
 	document.newPage();
 	err.print("" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
+	var pdfPage = writer.getImportedPage(reader, page);
 
 	var rot = 0;
 	var c = factor * Math.cos(rot * pi / 2);
@@ -72,6 +69,7 @@ function scaleToSize(args) {
 }
 
 registerModule({'command': 'scaletosize',
+		'parse_params':  checkScaletosizeArgs,
 		'name': 'Scale PDF pages to size',
 		'args': 'W H',
 		'usage': scaleToSizeUsage,

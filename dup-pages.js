@@ -7,34 +7,34 @@ function dupPagesUsage() {
 }
 
 
-function checkDupPagesArgs(args) {
+function checkDupPagesArgs(params) {
     var copies;
+
+    args = params.opts;
     if (args.length == 1) {
 	copies = parseInt(args[0]);
     } else {
 	dupPagesUsage();
     }
 
-    return { copies: copies }
+    params['copies'] = copies;
+
+    return params
 }
 
-function dupPages(args) {
-    var err = System.err;
+function dupPages(params) {
+    var err = params['err'];
 
-    var params = checkDupPagesArgs(args);
     var copies = params["copies"];
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    var reader = new PdfReader(params['in']);
 
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
-    var pageCount = pdfIn.getNumberOfPages();
+    var pageCount = reader.getNumberOfPages();
 
     err.println("dup-pages: " + copies + "x");
 
@@ -42,10 +42,10 @@ function dupPages(args) {
 
     err.print("dup-pages [");
     for (var pageno = 1; pageno <= pageCount; pageno++) {
-	var pageSize  = pdfIn.getPageSize(pageno);
+	var pageSize  = reader.getPageSize(pageno);
 	document.setPageSize(pageSize);
 
-	var pdfPage = writer.getImportedPage(pdfIn, pageno);
+	var pdfPage = writer.getImportedPage(reader, pageno);
 	for (var copy = 1; copy <= copies; copy++) {
 	    err.print("[" + pageno);
 
@@ -67,6 +67,7 @@ function dupPages(args) {
 }
 
 registerModule({'command': 'dup-pages',
+		'parse_params': checkDupPagesArgs,
 		'name': 'Duplicate individual PDF pages',
 		'args': 'C',
 		'usage': dupPagesUsage,

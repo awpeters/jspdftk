@@ -2,47 +2,43 @@ function catUsage(msg) {
     var err = System.err;
 
     err.print(msg + "\n");
-    err.print("Usage:  cat.js [pdfs]\n");
-    err.print("  Concatenate PDF on standard input with PDFS to standard output.\n");
+    err.print("Usage:  cat [pdfs]\n");
+    err.print("  Concatenate in-file with PDFS.\n");
     quit(1);
 }
 
 
-function checkCatArgs(args) {
-    return { pdfs: args }
+function checkCatArgs(params) {
+    params['pdfs'] = params['opts'];
+    params['pdfs'].push(params['infile']);
+    return params;
 }
 
-function cat(args) {
-    var err = System.err;
-
-    var params = checkCatArgs(args);
+function cat(params) {
+    var err = params['err'];
 
     var pdfs = new Array();
-    var stdin = new BufferedInputStream(System["in"]);
-    pdfs[0] = new PdfReader(stdin);
-    for (var idx = 0; idx < params["pdfs"].length; idx += 1) {
-	pdfs[idx + 1] = new PdfReader(params["pdfs"][idx]);
+    for (var idx in params["pdfs"]) {
+	if (params['pdfs'][idx] == '-') {
+	    pdfs[idx] = new PdfReader(new BufferedInputStream(System["in"]));
+	} else {
+	    pdfs[idx] = new PdfReader(new FileInputStream(params["pdfs"][idx]));
+	}
     }
 
-    for (var idx in pdfs) {
-	err.println(pdfs[idx]);
-    }
-
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var copy = new PdfCopy(document, stdout);
+    var copy = new PdfCopy(document, params['out']);
 
     document.open();
-    err.println("Cat");
+    err.print("cat: ");
     for (var idx in pdfs) {
-	var pdfIn = pdfs[idx];
-	var pageCount = pdfIn.getNumberOfPages();
-	err.print("[" + pageCount + ": ");
+	var reader = pdfs[idx];
+	var pageCount = reader.getNumberOfPages();
+	err.print("[" + params['pdfs'][idx] + ": ");
 	for (var page = 1; page <= pageCount; page++) {
 	    err.print("[" + page);
 
-	    var pdfPage = copy.getImportedPage(pdfIn, page);
+	    var pdfPage = copy.getImportedPage(reader, page);
 	    copy.addPage(pdfPage);
 	    err.print("]");
 	}
@@ -54,7 +50,8 @@ function cat(args) {
 }
 
 registerModule({'command': 'cat',
+		'parse_params': checkCatArgs,
 		'name': 'Concatenate PDF',
-		'args': '',
+		'args': 'PDFS',
 		'usage': catUsage,
 		'entry': cat});

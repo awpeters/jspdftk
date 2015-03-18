@@ -1,13 +1,15 @@
 function rotateScaleUsage() {
-    var err = java.lang.System.err;
+    var err = System.err;
 
-    err.print("Usage:  rotateScale.js sides [width height]\n");
+    err.print("Usage:  rotateScale sides [width height]\n");
     err.print("  sides: 1 = single sided, 2 = double sided.\n");
     err.print("  width / height in mm, if omitted default to A4.\n");
     quit(1);
 }
 
-function checkRotateScaleArgs(args) {
+function checkRotateScaleArgs(params) {
+    args = params['opts'];
+
     var sides;
     if (args.length >= 1) {
 	var sides = parseInt(args[0]);
@@ -36,31 +38,25 @@ function checkRotateScaleArgs(args) {
 	rotateScaleUsage();
     }
 
-    return { sides: sides, width: width, height: height }
+    params['sides'] = sides;
+    params['width'] = width;
+    params['height'] = height;
+
+    return params;
 }
 
-function rotateScale(args) {
-    var err = System.err;
-
-    var params = checkRotateScaleArgs(args);
+function rotateScale(params) {
+    var err = params['err'];
     var sides = params["sides"];
     var wd = params["width"];
     var ht = params["height"];
 
-    for (f in params) {
-	err.println(f + ": " + params[f]);
-    }
+    var reader = new PdfReader(params['in']);
 
-    var streamIn = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(streamIn);
-
-    var pagecount = pdfIn.getNumberOfPages();
+    var pagecount = reader.getNumberOfPages();
 
     var document = new Document(new Rectangle(wd, ht));
-    var streamOut = new BufferedOutputStream(System.out);
-    // var streamOut = new FileOutputStream("out.pdf");
-
-    var writer = PdfWriter.getInstance(document, streamOut);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
@@ -73,10 +69,10 @@ function rotateScale(args) {
 	document.newPage();
 	err.print("" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
-	var pagesize  = pdfIn.getPageSize(page);
+	var pdfPage = writer.getImportedPage(reader, page);
+	var pagesize  = reader.getPageSize(page);
 
-	var pageRot  = pdfIn.getPageRotation(page);
+	var pageRot  = reader.getPageRotation(page);
 
 	var ws = pagesize.getWidth();
 	var hs = pagesize.getHeight();
@@ -132,6 +128,7 @@ function rotateScale(args) {
 }
 
 registerModule({'command': 'rotateScale',
+		'parse_params': checkRotateScaleArgs,
 		'name': 'Rotate and Scale PDF pages',
 		'args': 'S [W H]',
 		'usage': rotateScaleUsage,

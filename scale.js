@@ -1,39 +1,32 @@
 function scaleUsage() {
-    var err = java.lang.System.err;
+    var err = System.err;
 
-    err.print("Usage:  scale.js factor\n");
+    err.print("Usage:  scale factor\n");
     quit(1);
 }
 
-function checkScaleArgs(args) {
-    var factor;
+function checkScaleArgs(params) {
+    args = params['opts'];
     if (args.length != 1) {
 	scaleUsage();
     }
-    var factor = parseFloat(args[0]);
-    return { factor: factor }
+
+    params['factor'] = parseFloat(args[0]);
+
+    return params;
 }
 
-function scale(args) {
-    var err = System.err;
+function scale(params) {
+    var err = params['err'];
 
-    var params = checkScaleArgs(args);
     var factor = params["factor"];
 
-    for (f in params) {
-	err.println(f + ": " + params[f]);
-    }
-
-    var streamIn = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(streamIn);
-
-    var pagecount = pdfIn.getNumberOfPages();
+    var reader = new PdfReader(params['in']);
 
     var document = new Document();
-    var streamOut = new BufferedOutputStream(System.out);
-    // var streamOut = new FileOutputStream("out.pdf");
+    var writer = PdfWriter.getInstance(document, params['out']);
 
-    var writer = PdfWriter.getInstance(document, streamOut);
+    var pagecount = reader.getNumberOfPages();
 
     document.open();
 
@@ -42,7 +35,7 @@ function scale(args) {
     var cb = writer.getDirectContent();
     for (var page = 1; page <= pagecount; page++) {
 	err.print("[");
-	var pagesize  = pdfIn.getPageSize(page);
+	var pagesize  = reader.getPageSize(page);
 	var W = pagesize.getWidth();
 	var H = pagesize.getHeight();
 
@@ -50,7 +43,7 @@ function scale(args) {
 	document.newPage();
 	err.print("" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
+	var pdfPage = writer.getImportedPage(reader, page);
 
 	var rot = 0;
 	var c = factor * Math.cos(rot * pi / 2);
@@ -68,6 +61,7 @@ function scale(args) {
 }
 
 registerModule({'command': 'scale',
+		'parse_params': checkScaleArgs,
 		'name': 'Scale PDF pages',
 		'args': 'F',
 		'usage': scaleUsage,

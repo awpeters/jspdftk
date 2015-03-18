@@ -8,33 +8,28 @@ function dupSetUsage() {
 
 
 function checkDupSetArgs(args) {
-    var copies;
     if (args.length == 1) {
-	copies = parseInt(args[0]);
+	args['copies'] = parseInt(args[0]);
     } else {
 	dupSetUsage();
     }
 
-    return { copies: copies }
+    return args;
 }
 
-function dupSet(args) {
-    var err = System.err;
+function dupSet(params) {
+    var err = params['err'];
 
-    var params = checkDupSetArgs(args);
     var copies = params["copies"];
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    var reader = new PdfReader(params['in']);
 
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
-    var pageCount = pdfIn.getNumberOfPages();
+    var pageCount = reader.getNumberOfPages();
 
     err.println("dup-set: " + copies + "x");
 
@@ -44,7 +39,7 @@ function dupSet(args) {
 	for (var pageno = 1; pageno <= pageCount; pageno++) {
 	    err.print("[" + pageno);
 
-	    var pageSize  = pdfIn.getPageSize(pageno);
+	    var pageSize  = reader.getPageSize(pageno);
 
 	    document.setPageSize(pageSize);
 	    document.newPage();
@@ -54,7 +49,7 @@ function dupSet(args) {
 	    var x = 0;
 	    var y = 0;
 
-	    var pdfPage = writer.getImportedPage(pdfIn, pageno);
+	    var pdfPage = writer.getImportedPage(reader, pageno);
 	    cb.addTemplate(pdfPage, c, s, -s, c, x, y);
 
 	    err.print("]");
@@ -67,6 +62,7 @@ function dupSet(args) {
 }
 
 registerModule({'command': 'dup-set',
+		'parse_params': checkDupSetArgs,
 		'name': 'Duplicate PDF pages as set',
 		'usage': dupSetUsage,
 		'entry': dupSet});

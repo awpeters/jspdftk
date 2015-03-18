@@ -12,25 +12,21 @@ function checkCrossImposeArgs(args) {
 
     if (args.length == 0) {
     } else if (args.length == 1) {
-	full = true;
+	args['full'] = true;
     } else {
 	crossImposeUsage("crossImpose.js needs at most 1 argument.");
     }
 
-    return { full: full }
+    return args;
 }
 
-function crossImpose(args) {
-    var err = System.err;
+function crossImpose(params) {
+    var err = params['err'];
 
-    var params = checkCrossImposeArgs(args);
+    var reader = new PdfReader(params['in']);
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
-
-    var stdout = new BufferedOutputStream(System.out);
-    var pageCount = pdfIn.getNumberOfPages();
-    var pageSize = pdfIn.getPageSize(1);
+    var pageCount = reader.getNumberOfPages();
+    var pageSize = reader.getPageSize(1);
     var w = pageSize.getWidth();
     var h = pageSize.getHeight();
 
@@ -38,7 +34,7 @@ function crossImpose(args) {
     var H = 3 * h;
 
     var document = new Document(new Rectangle(W, H));
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
@@ -54,7 +50,7 @@ function crossImpose(args) {
 	err.print("[");
 	err.print("" + pageno);
 
-	var page = writer.getImportedPage(pdfIn, pageno);
+	var page = writer.getImportedPage(reader, pageno);
 
 	// middle
 	cb.addTemplate(page, 1, 0, 0, 1, w, h);
@@ -93,6 +89,7 @@ function crossImpose(args) {
 }
 
 registerModule({'command': 'cross-impose',
+		'parse_params': checkCrossImposeArgs,
 		'name': 'impose PDF page as cross',
 		'args': '[full]',
 		'usage': crossImposeUsage,

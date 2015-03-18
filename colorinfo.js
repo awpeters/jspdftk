@@ -15,7 +15,7 @@ function colorInfoUsage() {
 }
 
 function checkColorInfoArgs(args) {
-    return { }
+    return args;
 }
 
 function printOutline(outline, indent) {
@@ -33,54 +33,46 @@ function printOutline(outline, indent) {
     return result;
 }
 
-function colorinfo(args) {
-    var err = System.err;
+function colorinfo(params) {
+    var err = params['err'];
 
-    var params = checkColorInfoArgs(args);
+    var reader = new PDDocument.load(params['in']);
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PDDocument.load(stdin);
-
-    var stdout = System.out;
+    if (params['outfile'] == '-') {
+	var out = System.out;
+    } else {
+	var out = PrintStream(params['out']);
+    }
 
     if (true) {
-	var outline = pdfIn.getDocumentCatalog().getDocumentOutline();
-	stdout.println(printOutline(outline, ""));
+	var outline = reader.getDocumentCatalog().getDocumentOutline();
+	out.println(printOutline(outline, ""));
     }
 
 
-    var pages = pdfIn.getDocumentCatalog().getAllPages();
-    stdout.println("" + pages.size());
+    var pages = reader.getDocumentCatalog().getAllPages();
 
-    //    var files = pdfIn.getEmbeddedFiles();
-    //    stdout.println(files);
-
-
-
+    //    var files = reader.getEmbeddedFiles();
+    //    out.println(files);
 
     var pageCount = 0;
 
     for (var pageCounter = 0; pageCounter < pages.size(); pageCounter++) {
-
-	//stdout.print(": ");
-	stdout.println("Page: " + (pageCounter + 1));
-
-	//
-	//stdout.println();
+	out.println("Page: " + (pageCounter + 1));
 
 	var curPage = pages.get(pageCounter);
 
 	var mediaBox = curPage.findMediaBox();
-	stdout.println("MediaBox: W x H: " +
-		       pt2mm(mediaBox.getWidth()) + " x " +
-		       pt2mm(mediaBox.getHeight()));
+	out.println("MediaBox: W x H: " +
+		    pt2mm(mediaBox.getWidth()) + " x " +
+		    pt2mm(mediaBox.getHeight()));
 	var cropBox = curPage.findMediaBox();
-	stdout.println("CropBox: W x H: " +
-		       pt2mm(cropBox.getWidth()) + " x " +
-		       pt2mm(cropBox.getHeight()));
+	out.println("CropBox: W x H: " +
+		    pt2mm(cropBox.getWidth()) + " x " +
+		    pt2mm(cropBox.getHeight()));
 
 	var images = curPage.findResources().getImages();
-	//stdout.println("Resources: " + images);
+	//out.println("Resources: " + images);
 
 	//var colorSpaces = curPage.findResources().getColorSpaces();
 
@@ -98,17 +90,17 @@ function colorinfo(args) {
 		    // set colorspace
 		    var colorSpace = pageTokens.get(counter - 1).getName();
 		    // var colorSpace = colorSpaces.get(colorSpace);
-		    stdout.println("colorspace for " + op + ": " + colorSpace);
+		    out.println("colorspace for " + op + ": " + colorSpace);
 		}
-		
+
 		if (op.equals("scn") ||
 		    op.equals("SCN")) {
 		    // set color
 		    var color = pageTokens.get(counter - 1);
-		    stdout.println("color for " + op + ": " +
-				   color);
+		    out.println("color for " + op + ": " +
+				color);
 		}
-		
+
 		if (op.equals("Do")) {
 		    // print image
 		    var image = pageTokens.get(counter - 1).getName();
@@ -117,7 +109,7 @@ function colorinfo(args) {
 		    var type = "unknown";
 		    var colorspace = "null";
 
-		    stdout.println("pixels: " + pixels);
+		    out.println("pixels: " + pixels);
 
 		    if (pixels instanceof PDCcitt) {
 			type = "CCITT";
@@ -129,15 +121,17 @@ function colorinfo(args) {
 			type = "PNG";
 			//colorspace = pixels.getColorSpace().getName();
 		    }
-		    var bitdepth = pixels.getBitsPerComponent();
+		    if (pixels != null) {
+			var bitdepth = pixels.getBitsPerComponent();
+		    }
 
-		    //var imageObject = pdfIn.getObject(image);
-		    stdout.println("image " + op + ": " + 
-				   colorspace + ", " +
-				   image + ", " +
-				   type + ", " +
-				   bitdepth + ", " +
-				   pixels);
+		    //var imageObject = reader.getObject(image);
+		    out.println("image " + op + ": " +
+				colorspace + ", " +
+				image + ", " +
+				type + ", " +
+				bitdepth + ", " +
+				pixels);
 		}
 		if (op.equals("rg") ||
 		    op.equals("RG")) {
@@ -149,10 +143,10 @@ function colorinfo(args) {
 		    if ((red == green) && (green == blue)) {
 			// black or gray scale
 		    } else {
-			stdout.println("RGB " + op + ": (" +
-				       red + ", " +
-				       green + ", " +
-				       blue + ")");
+			out.println("RGB " + op + ": (" +
+				    red + ", " +
+				    green + ", " +
+				    blue + ")");
 		    }
 		}
 		if (op.equals("k") ||
@@ -166,11 +160,11 @@ function colorinfo(args) {
 		    if ((C == M) || (M == Y)) {
 			// black or gray scale
 		    } else {
-			stdout.println("CMYK " + op + ": (" +
-				       C + ", " +
-				       M + ", " +
-				       Y + ", " +
-				       K + ")");
+			out.println("CMYK " + op + ": (" +
+				    C + ", " +
+				    M + ", " +
+				    Y + ", " +
+				    K + ")");
 		    }
 		}
 		if (op.equals("g") ||
@@ -179,19 +173,18 @@ function colorinfo(args) {
 		}
 
 	    }
-//	    // stdout.print(key);
-//	    // stdout.print(": ");
-//	    // stdout.println(info.get(key));
+	    //	    // out.print(key);
+	    //	    // out.print(": ");
+	    //	    // out.println(info.get(key));
 	}
-	stdout.println(" ");
+	out.println(" ");
     }
 
-    stdout.println("Pages: " + pdfIn.getNumberOfPages());
-
-    pdfIn.close();
+    reader.close();
 }
 
 registerModule({'command': 'colorinfo',
+		'parse_params': checkColorInfoArgs,
 		'name': 'Show PDF color information per page',
 		'args': '',
 		'usage': colorInfoUsage,

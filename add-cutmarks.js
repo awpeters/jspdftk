@@ -8,25 +8,20 @@ function cutmarksUsage(msg) {
 }
 
 function checkCutmarksArgs(args) {
-    return { }
+    return args;
 }
 
-function cutmarks(args) {
-    var err = System.err;
+function cutmarks(params) {
+    var err = params['err'];
 
-    var params = checkCutmarksArgs(args);
+    var reader = new PdfReader(params['in']);
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
-
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
-    var pageCount = pdfIn.getNumberOfPages();
+    var pageCount = reader.getNumberOfPages();
 
     err.println("Cutmarks");
     err.println("Pages: " + pageCount);
@@ -38,8 +33,8 @@ function cutmarks(args) {
     for (var page = 1; page <= pageCount; page++) {
 	err.print("[" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
-	var pageSize = pdfIn.getPageSize(page);
+	var pdfPage = writer.getImportedPage(reader, page);
+	var pageSize = reader.getPageSize(page);
 
 	var W = pageSize.width;
 	var H = pageSize.height;
@@ -112,6 +107,7 @@ function cutmarks(args) {
 }
 
 registerModule({'command': 'cutmarks',
+		'parse_params': checkCutmarksArgs,
 		'name': 'Cutmarks PDFs',
 		'args': '',
 		'usage': cutmarksUsage,

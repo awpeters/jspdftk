@@ -1,42 +1,43 @@
 function infoUsage() {
     var err = System.err;
 
-    err.print("Usage:  info.js\n");
+    err.print("Usage:  info\n");
     err.print("  PDF information.\n");
     quit(1);
 }
 
 function checkInfoArgs(args) {
-    return { }
+    return args;
 }
 
-function info(args) {
-    var err = System.err;
+function info(params) {
+    var err = params['err'];
 
-    var params = checkInfoArgs(args);
+    var reader = new PdfReader(params['in']);
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    if (params['outfile'] == '-') {
+	var out = System.out;
+    } else {
+	var out = PrintStream(params['out']);
+    }
 
-    var stdout = System.out;
+    var pageCount = reader.getNumberOfPages();
+    var info = reader.getInfo();
 
-    var pageCount = pdfIn.getNumberOfPages();
-    var info = pdfIn.getInfo();
-
-    // var it = info.entrySet().iterator();
     var it = info.keySet().iterator();
     while (it.hasNext()) {
 	var key = it.next();
 
-	stdout.print(key);
-	stdout.print(": ");
-	stdout.println(info.get(key));
+	out.print(key);
+	out.print(": ");
+	out.println(info.get(key));
     }
 
-    stdout.println("Pages: " + pageCount);
+    out.println("Pages: " + pageCount);
 }
 
 registerModule({'command': 'info',
+		'parse_params': checkInfoArgs,
 		'name': 'Show PDF info',
 		'args': '',
 		'usage': infoUsage,

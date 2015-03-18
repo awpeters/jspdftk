@@ -8,12 +8,14 @@ function cutUsage() {
     quit(1);
 }
 
-function checkCutArgs(args) {
+function checkCutArgs(params) {
     var width;
     var height;
     var xoffset = 0;
     var yoffset = 0;
     var center = true;
+
+    args = params.opts;
 
     if (args.length == 0) {
 	width = mm2pt(210);
@@ -39,31 +41,31 @@ function checkCutArgs(args) {
 	cutUsage();
     }
 
-    return { width: width, height: height,
-	     xoffset: xoffset, yoffset: yoffset,
-	     center: center }
+    params['width'] = width;
+    params['height'] = height;
+    params['xoffset'] = xoffset;
+    params['yoffset'] = yoffset;
+    params['center'] = center;
+
+    return params;
 }
 
-function cut(args) {
-    var err = System.err;
+function cut(params) {
+    var err = params["err"];
 
-    var params = checkCutArgs(args);
     var wd = params["width"];
     var ht = params["height"];
     var center = params["center"];
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    var reader = new PdfReader(params["in"]);
 
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params["out"]);
 
     document.open();
     document.setPageSize(new Rectangle(wd, ht));
 
-    var pageCount = pdfIn.getNumberOfPages();
+    var pageCount = reader.getNumberOfPages();
 
     err.println("Cut to " + pt2mm(wd) + "x" + pt2mm(ht) + "mm");
     err.println("Pages: " + pageCount);
@@ -72,8 +74,8 @@ function cut(args) {
     for (var page = 1; page <= pageCount; page++) {
 	err.print("[" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
-	var pageSize = pdfIn.getPageSize(page);
+	var pdfPage = writer.getImportedPage(reader, page);
+	var pageSize = reader.getPageSize(page);
 	var ws = pageSize.getWidth();
 	var hs = pageSize.getHeight();
 
@@ -99,6 +101,7 @@ function cut(args) {
 }
 
 registerModule({'command': 'cut',
+		'parse_params': checkCutArgs,
 		'name': 'Cut PDF page to size',
 		'args': 'W H [X Y]',
 		'usage': cutUsage,

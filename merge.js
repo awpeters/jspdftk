@@ -2,41 +2,39 @@ function mergeUsage(msg) {
     var err = System.err;
 
     err.print(msg + "\n");
-    err.print("Usage:  merge.js bgPDF\n");
+    err.print("Usage:  merge bgPDF\n");
     err.print("  Put bgPDF as background to every page.\n");
     quit(1);
 }
 
-function checkMergeArgs(args) {
+function checkMergeArgs(params) {
+    args = params['opts'];
     if (args.length < 1)
-	mergeUsage("merge.js needs at least one argument.");
+	mergeUsage("merge needs at least one argument.");
 
     if (args.length > 1)
-	mergeUsage("merge.js needs no more than one argument.  Found: " + args);
+	mergeUsage("merge needs no more than one argument.  Found: " + args);
 
-    pdf = args[0];
-    return { backgroundPdf: pdf }
+    params['backgroundPdf'] = args[0];
+
+    return params;
 }
 
-function merge(args) {
-    var err = System.err;
+function merge(params) {
+    var err = params['err'];
 
-    var params = checkMergeArgs(args);
     var bgPdf = params["backgroundPdf"];
 
     var pdfBg = new PdfReader(bgPdf);
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    var reader = new PdfReader(params['in']);
 
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
-    var pageCount = pdfIn.getNumberOfPages();
+    var pageCount = reader.getNumberOfPages();
 
     err.println("Merge");
     err.println("Pages: " + pageCount);
@@ -46,8 +44,8 @@ function merge(args) {
     for (var page = 1; page <= pageCount; page++) {
 	err.print("[" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
-	var pageSize = pdfIn.getPageSize(page);
+	var pdfPage = writer.getImportedPage(reader, page);
+	var pageSize = reader.getPageSize(page);
 
 	document.setPageSize(pageSize);
 	document.newPage();
@@ -68,6 +66,7 @@ function merge(args) {
 }
 
 registerModule({'command': 'merge',
+		'parse_params': checkMergeArgs,
 		'name': 'Merge PDFs',
 		'args': 'BG',
 		'usage': mergeUsage,

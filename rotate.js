@@ -1,15 +1,17 @@
 function rotateUsage() {
     var err = System.err;
 
-    err.print("Usage:  rotate.js angle\n");
+    err.print("Usage:  rotate [angle]\n");
     err.print("  Rotate PDF angle degrees clockwise.\n");
-    err.print("  angle in degrees.\n");
+    err.print("  angle in degrees, default 90 degrees clockwise.\n");
     quit(1);
 }
 
 
-function checkRotateArgs(args) {
+function checkRotateArgs(params) {
     var angle;
+
+    args = params.opts;
     if (args.length == 0) {
 	angle = deg2rad(90);
     } else if (args.length == 1) {
@@ -18,26 +20,24 @@ function checkRotateArgs(args) {
 	rotateUsage();
     }
 
-    return { angle: angle }
+    params['angle'] = angle;
+
+    return params;
 }
 
-function rotate(args) {
-    var err = System.err;
+function rotate(params) {
+    var err = params['err'];
 
-    var params = checkRotateArgs(args);
     var angle = params["angle"];
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
+    var reader = new PdfReader(params['in']);
 
-    var stdout = new BufferedOutputStream(System.out);
     var document = new Document();
-
-    var writer = PdfWriter.getInstance(document, stdout);
+    var writer = PdfWriter.getInstance(document, params['out']);
 
     document.open();
 
-    var pageCount = pdfIn.getNumberOfPages();
+    var pageCount = reader.getNumberOfPages();
 
     err.println("Rotate");
     err.println("Pages: " + pageCount);
@@ -46,10 +46,10 @@ function rotate(args) {
     for (var page = 1; page <= pageCount; page++) {
 	err.print("[" + page);
 
-	var pdfPage = writer.getImportedPage(pdfIn, page);
-	var pageSize  = pdfIn.getPageSize(page);
+	var pdfPage = writer.getImportedPage(reader, page);
+	var pageSize  = reader.getPageSize(page);
 
-	var pageRotation  = pdfIn.getPageRotation(page);
+	var pageRotation  = reader.getPageRotation(page);
 
 	var wd = pageSize.getWidth();
 	var ht = pageSize.getHeight();
@@ -72,6 +72,7 @@ function rotate(args) {
 }
 
 registerModule({'command': 'rotate',
+		'parse_params': checkRotateArgs,
 		'name': 'Rotate PDF pages',
 		'args': 'A',
 		'usage': rotateUsage,

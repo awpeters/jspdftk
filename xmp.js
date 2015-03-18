@@ -1,37 +1,39 @@
 function xmpUsage() {
     var err = System.err;
 
-    err.print("Usage:  xmp.js\n");
+    err.print("Usage:  xmp\n");
     err.print("  PDF xmp information.\n");
     quit(1);
 }
 
-function checkXmpArgs(args) {
-    return { }
+function checkXmpArgs(params) {
+    return params;
 }
 
-function xmp(args) {
-    var err = System.err;
+function xmp(params) {
+    var err = params["err"];
 
-    var params = checkXmpArgs(args);
+    var reader = new PdfReader(params['in']);
 
-    var stdin = new BufferedInputStream(System["in"]);
-    var pdfIn = new PdfReader(stdin);
-
-    var stdout = System.out;
+    if (params['outfile'] == '-') {
+	var out = System.out;
+    } else {
+	var out = PrintStream(params['out']);
+    }
 
     err.print("Xmp");
 
-    var xml = pdfIn.getMetadata();
+    var xml = reader.getMetadata();
     if (xml == null) {
 	err.println(": No information available");
 	return;
     }
     var s = new java.lang.String(xml);
-    stdout.print(s);
+    out.print(s);
 }
 
 registerModule({'command': 'xmp',
+		'parse_params': checkXmpArgs,
 		'name': 'Display XMP information in PDF',
 		'args': '',
 		'usage': xmpUsage,
