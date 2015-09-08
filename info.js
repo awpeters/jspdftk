@@ -34,6 +34,20 @@ function info(params) {
     }
 
     out.println("Pages: " + pageCount);
+
+    for (var page = 1; page <= pageCount; page++) {
+
+	var pageSize = reader.getPageSize(page);
+	var pageRotation  = reader.getPageRotation(page);
+	var w = Math.round(pt2mm(pageSize.getWidth()));
+	var h = Math.round(pt2mm(pageSize.getHeight()));
+	out.println(
+	    "Page: " + page
+		+ ", W: " + w
+		+ ", H: " + h
+		+ ", R: " + pageRotation
+	);
+    }
 }
 
 registerModule({'command': 'info',
