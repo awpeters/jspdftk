@@ -53,10 +53,10 @@ function usage() {
     err.print("Usage:  jspdftk action [args] file-in file-out\n");
     err.print("Available actions:\n");
     for (var name in modules) {
-	err.print(sprintf("  %15s  %-10s  %s\n",
-			  modules[name]['command'],
-			  modules[name]['args'],
-			  modules[name]['name']));
+        err.print(sprintf("  %15s  %-10s  %s\n",
+                          modules[name]['command'],
+                          modules[name]['args'],
+                          modules[name]['name']));
     }
     err.print("\n");
     quit(1);
@@ -66,9 +66,9 @@ function jspdftk(args) {
     var err = System.err;
 
     if (args.length < 3) {
-	usage();
+        usage();
     }
-    
+
     var module = args[0];
 
     // parse command line
@@ -76,33 +76,33 @@ function jspdftk(args) {
     var infile = args.slice(-2, -1);
     var opts = args.slice(1, args.length - 2);
     var params = {
-	'module': module,
-	'infile': infile,
-	'outfile': outfile,
-	'opts': opts
+        'module': module,
+        'infile': infile,
+        'outfile': outfile,
+        'opts': opts
     };
 
     if (module in modules) {
-	params = (modules[module]['parse_params'])(params);
+        params = (modules[module]['parse_params'])(params);
 
-	if (params['infile'] == '-') {
-	    params['in'] = new BufferedInputStream(System["in"]);
-	} else {
-	    params['in'] = new FileInputStream(params["infile"]);
-	}
-	if (params['outfile'] == '-') {
-	    params['out'] = new BufferedOutputStream(System["out"]);
-	} else {
-	    params['out'] = new FileOutputStream(params["outfile"]);
-	}
-	params['err'] = System.err;
+        if (params['infile'] == '-') {
+            params['in'] = new BufferedInputStream(System["in"]);
+        } else {
+            params['in'] = new FileInputStream(params["infile"]);
+        }
+        if (params['outfile'] == '-') {
+            params['out'] = new BufferedOutputStream(System["out"]);
+        } else {
+            params['out'] = new FileOutputStream(params["outfile"]);
+        }
+        params['err'] = System.err;
 
 
-	(modules[module]['entry'])(params);
+        (modules[module]['entry'])(params);
     } else if (module == null) {
-	usage();
+        usage();
     } else {
-	err.print("Unknown command " + module + "\n");
+        err.print("Unknown command " + module + "\n");
     }
 }
 
