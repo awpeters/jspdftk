@@ -39,6 +39,7 @@ load("cross-impose.js");
 load("dup-pages.js");
 load("extractOceOdl.js");
 load("info.js");
+load("jpg2pdf.js");
 load("merge.js");
 load("rotate.js");
 load("rotateScale.js");
